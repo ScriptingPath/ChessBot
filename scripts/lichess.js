@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Save
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  try to take over the world!
-// @author       You
+// @name         LichessBot
+// @namespace    https://github.com/ScriptingPath/ChessBot
+// @version      1.0
+// @description  ChessBot For Lichess
+// @author       ScriptingPath
 // @grant        GM_xmlhttpRequest
 // @connect      127.0.0.1
 // @match        *://*.lichess.org/*
