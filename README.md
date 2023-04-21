@@ -8,7 +8,7 @@ How to use the bot:
 3. Download the latest version of Stockfish [here](https://stockfishchess.org/download/) and place it in folder. Extract the executable file from the archive and change it name to "stockfish.exe".
 4. Install the Tampermonkey extension in your browser.
 5. Download [lichess.user.js](https://github.com/ScriptingPath/ChessBot/releases/download/v1.0.0/lichess.user.js) and install it in Tampermonkey.
-6. Done! Run app.exe and enter the game.
+6. Done! Run app.exe and enter the game. Pressing the X key on the keyboard will show the best move on the board.
 
 The first time you run it, a file is created with the bot's settings. You can edit it.
 The bot works only if app.exe is running.
