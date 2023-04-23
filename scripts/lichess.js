@@ -36,18 +36,15 @@ function get_moves() {
     var puzzle_box = document.querySelector(classes.puzzle_moves_box);
 
     if (moves_box) {
-        var moves = "";
+        var moves = new Array;
 
         Array.from(moves_box.childNodes).forEach(function (elem) {
-            if (elem.tagName == tags.move_number.toUpperCase()) {
-                moves += `${elem.textContent}. `;
-
-            } else if (elem.tagName == tags.move.toUpperCase()) {
-                moves += `${elem.textContent} `;
+            if (elem.tagName == tags.move.toUpperCase()) {
+                moves.push(elem.textContent);
             }
         })
 
-        return moves.trim();
+        return moves;
 
     } else if (puzzle_box) {
         var moves = "";
@@ -150,7 +147,7 @@ function set_cords() {
 }
 
 
-function draw_move(move) {
+function draw_move(move, color) {
     var from = move.slice(0, -2)
     var to = move.slice(2)
 
@@ -159,14 +156,14 @@ function draw_move(move) {
     var from_square = document.createElement("square");
     from_square.className = "from";
     from_square.setAttribute("style", `transform: translate(${horizontal[from[0]]}px, ${vertical[from[1]]}px);
-    border: 2px solid #0000ff;
+    border: 2px solid ${color};
     border-radius: 10px`)
     board.appendChild(from_square);
 
     var to_square = document.createElement("square");
     to_square.className = "to";
     to_square.setAttribute("style", `transform: translate(${horizontal[to[0]]}px, ${vertical[to[1]]}px);
-    border: 2px solid #ff0000;
+    border: 2px solid ${color};
     border-radius: 10px`)
 
     board.appendChild(to_square);
@@ -174,11 +171,13 @@ function draw_move(move) {
 
 
 function remove_draw() {
-    Array.from(document.querySelector(tags.board).querySelectorAll(".from")).forEach(function (elem) {
+    board = document.querySelector(tags.board);
+
+    Array.from(board.querySelectorAll(".from")).forEach(function (elem) {
         elem.remove();
     })
 
-    Array.from(document.querySelector(tags.board).querySelectorAll(".to")).forEach(function (elem) {
+    Array.from(board.querySelectorAll(".to")).forEach(function (elem) {
         elem.remove();
     })
 }
@@ -193,7 +192,10 @@ function remove_draw() {
             GM_xmlhttpRequest({
                 method: "POST",
                 url: "http://127.0.0.1:9211/",
-                data: get_moves(),
+                data: JSON.stringify({
+                    "moves": get_moves(),
+                    "next_move": get_moves_count() + 1
+                }),
 
                 headers: {
                     "Content-Type": "application/json"
@@ -205,15 +207,19 @@ function remove_draw() {
                     if (data != "None" && data != null && data != undefined) {
                         set_cords();
                         remove_draw();
-                        draw_move(response.responseText.split(" ")[0])
+
+                        if (response.responseText.split(" ")[1] == "stockfish") {
+                            draw_move(response.responseText.split(" ")[0], "#ff0000")
+                        } else {
+                            draw_move(response.responseText.split(" ")[0], "#000000")
+                        }
+                        
                     } else {
                         console.error(`Engine Error: Response is ${data}`)
                     }
-
                 }
             });
         }
     });
-
 })();
 
