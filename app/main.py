@@ -33,12 +33,13 @@ def main():
     if not os.path.exists("settings.json"):
         settings.create_settings()
     
+    reset_stockfish()
+
     with HTTPServer(('', 9211), handler) as server:
         print("Server Started")
         server.serve_forever()
 
 
 while True:
-    reset_stockfish()
     main()
     print("Server Restarted")

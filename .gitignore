@@ -1,1 +1,4 @@
 /.vscode
+/app/main.build
+/app/main.dist
+/app/main.onefile-build

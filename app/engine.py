@@ -10,7 +10,7 @@ def get_stockfish_move(fen: str, stockfish: Stockfish):
 
 
 def find_game(moves: str):
-    with open("app/data/openings", "r", encoding="utf-8") as file:
+    with open("data/openings", "r", encoding="utf-8") as file:
         for line in file:
             if line.startswith(moves):
                 return line

@@ -1,0 +1,1 @@
+{"stockfish_path": "stockfish.exe", "stockfish_depth": 15, "stockfish_params": {"Debug Log File": "", "Contempt": 0, "Min Split Depth": 0, "Threads": 1, "Ponder": "false", "Hash": 16, "MultiPV": 1, "Skill Level": 20, "Move Overhead": 10, "Minimum Thinking Time": 20, "Slow Mover": 100, "UCI_Chess960": "false", "UCI_LimitStrength": "false", "UCI_Elo": 1350}}

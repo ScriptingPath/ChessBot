@@ -10,20 +10,22 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // ==/UserScript==
 
+var last_moves_count = 0;
+var check_interval = null;
+
 var tags = {
     "moves_box": "l4x",
-    "move_number": "i5z",
     "move": "kwdb",
     "board": "cg-board",
     "puzzle_move": "move",
-    "index_number": "index"
 }
 
 
 var classes = {
     "puzzle_moves_box": ".tview2",
     "white_orientation": ".orientation-white",
-    "black_orientation": ".orientation-black"
+    "black_orientation": ".orientation-black",
+    "button": ".button"
 }
 
 
@@ -36,7 +38,7 @@ function get_moves() {
     var puzzle_box = document.querySelector(classes.puzzle_moves_box);
 
     if (moves_box) {
-        var moves = new Array;
+        var moves = [];
 
         Array.from(moves_box.childNodes).forEach(function (elem) {
             if (elem.tagName == tags.move.toUpperCase()) {
@@ -47,32 +49,42 @@ function get_moves() {
         return moves;
 
     } else if (puzzle_box) {
-        var moves = "";
+        var moves = [];
 
         Array.from(puzzle_box.childNodes).forEach(function (elem) {
-            if (elem.tagName == tags.index_number.toUpperCase()) {
-                moves += `${elem.textContent}. `;
-            } else if (elem.tagName == tags.puzzle_move.toUpperCase()) {
-                moves += `${elem.textContent} `;
+            if (elem.tagName == tags.puzzle_move.toUpperCase()) {
+                moves.push(elem.textContent.replace("✓", ""));
             }
         })
 
-        return moves.trim();
+        return moves;
     }
 }
 
 
 function get_moves_count() {
     var moves_box = document.querySelector(tags.moves_box);
-    var puzzle_box = document.querySelector(classes.puzzle_moves_box);
 
     if (moves_box) {
         return moves_box.querySelectorAll(tags.move).length;
-    } else if (puzzle_box) {
+    }
+
+    var puzzle_box = document.querySelector(classes.puzzle_moves_box);
+
+    if (puzzle_box) {
         return puzzle_box.querySelectorAll(tags.puzzle_move).length;
     }
 }
 
+function get_turn() {
+    if (get_moves_count() % 2 == 0) {
+        return "white";
+    } else if (get_moves_count() % 2 == 1) {
+        return "black";
+    } else {
+        return "white";
+    }
+}
 
 function get_board_square_size() {
     return get_board_size() / 8;
@@ -86,9 +98,9 @@ function get_board_size() {
 
 function get_board_orientation() {
     if (document.querySelector(classes.white_orientation)) {
-        return "white"
+        return "white";
     } else if (document.querySelector(classes.black_orientation)) {
-        return "black"
+        return "black";
     } else {
         return "white";
     }
@@ -171,7 +183,7 @@ function draw_move(move, color) {
 
 
 function remove_draw() {
-    board = document.querySelector(tags.board);
+    var board = document.querySelector(tags.board);
 
     Array.from(board.querySelectorAll(".from")).forEach(function (elem) {
         elem.remove();
@@ -182,44 +194,67 @@ function remove_draw() {
     })
 }
 
+function get_best_move() {
+    GM_xmlhttpRequest({
+        method: "POST",
+        url: "http://127.0.0.1:9211/",
+        data: JSON.stringify({
+            "moves": get_moves(),
+            "next_move": get_moves_count() + 1
+        }),
+
+        headers: {
+            "Content-Type": "application/json; charset=utf-8"
+        },
+
+        onload: function (response) {
+            var data = response.responseText
+
+            if (data != "None" && data != null && data != undefined) {
+                set_cords();
+                remove_draw();
+
+                if (response.responseText.split(" ")[1] == "stockfish") {
+                    draw_move(response.responseText.split(" ")[0], "#ff0000")
+                } else {
+                    draw_move(response.responseText.split(" ")[0], "#000000")
+                }
+
+            } else {
+                console.error(`Engine Error: Response is ${data}`)
+            }
+        }
+    });
+}
+
+function check() {
+    var moves_count = get_moves_count();
+
+    if (moves_count != last_moves_count && get_turn() == get_board_orientation()) {
+        last_moves_count = moves_count;
+        setTimeout(get_best_move, 150);
+    }
+}
 
 (function () {
     'use strict';
 
     document.addEventListener('keydown', function (event) {
         if (event.code == 'KeyX') {
-
-            GM_xmlhttpRequest({
-                method: "POST",
-                url: "http://127.0.0.1:9211/",
-                data: JSON.stringify({
-                    "moves": get_moves(),
-                    "next_move": get_moves_count() + 1
-                }),
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                onload: function (response) {
-                    var data = response.responseText
-
-                    if (data != "None" && data != null && data != undefined) {
-                        set_cords();
-                        remove_draw();
-
-                        if (response.responseText.split(" ")[1] == "stockfish") {
-                            draw_move(response.responseText.split(" ")[0], "#ff0000")
-                        } else {
-                            draw_move(response.responseText.split(" ")[0], "#000000")
-                        }
-                        
-                    } else {
-                        console.error(`Engine Error: Response is ${data}`)
-                    }
-                }
-            });
+            get_best_move();
         }
     });
-})();
 
+    document.addEventListener('keydown', function (event) {
+        if (event.code == 'KeyC') {
+            if (!check_interval) {
+                check_interval = setInterval(check, 50);
+            } else {
+                clearInterval(check_interval);
+                check_interval = null;
+                last_moves_count = 0;
+            }
+        }
+    })
+    
+})();
