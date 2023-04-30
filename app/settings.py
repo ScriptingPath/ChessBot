@@ -1,31 +1,23 @@
 import json
-import os
-from typing import Optional
 
 default_settings = {
-    "stockfish_path": "stockfish.exe",
-    "stockfish_depth": 15,
+    "engine_command": None,  # path to engine with args
+    "engine_timeout": 15,  # timeout for starting and thinking
+    "engine_max_thinking_time": 2,
+    "engine_depth": 15,  # strength (change it for speed)
+    # WARNING! If you change the port here, change it in the script as well
+    "server_port": 9211,
 
-    "stockfish_params": {
-        "Debug Log File": "",
-        "Contempt": 0,
-        "Min Split Depth": 0,
-        "Threads": 1,
-        "Ponder": "false",
-        "Hash": 16,
-        "MultiPV": 1,
-        "Skill Level": 20,
-        "Move Overhead": 10,
-        "Minimum Thinking Time": 20,
-        "Slow Mover": 100,
-        "UCI_Chess960": "false",
-        "UCI_LimitStrength": "false",
-        "UCI_Elo": 1350,
+    "advisor_boxes": {
+        "from_box_color": "#0000FF",
+        "to_box_color": "#ff0000",
+        "border_size": "3px",
+        "border_radius": "0px"
     }
 }
 
 
-def get_value(key: str) -> Optional[str]:
+def get_value(key: str):
     return read_settings().get(key)
 
 

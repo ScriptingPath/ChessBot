@@ -1,33 +1,30 @@
+import settings
+
 import chess
+import chess.engine
 import chess.pgn
-from stockfish import Stockfish
+import chess.polyglot
 
 
-def get_stockfish_move(fen: str, stockfish: Stockfish):
-    stockfish.set_fen_position(fen)
-
-    return stockfish.get_best_move()
+def get_engine_move(board: chess.Board, engine: chess.engine.SimpleEngine):
+    return engine.play(board=board, limit=chess.engine.Limit(time=settings.get_value("engine_max_thinking_time"), depth=settings.get_value("engine_depth"))).move.uci()
 
 
-def find_game(moves: str):
-    with open("data/openings", "r", encoding="utf-8") as file:
-        for line in file:
-            if line.startswith(moves):
-                return line
-
-
-def get_best_move(moves: list, next_move: int, stockfish: Stockfish):
-    if moves == None or moves == "":
-        return "e2e4"
+def get_best_move(pieces: list[str], turn: str, engine: chess.engine.SimpleEngine):
+    if not pieces:
+        return None
 
     board = chess.Board()
+    board.clear()
+    board.turn = chess.WHITE if turn == "white" else chess.BLACK
 
-    for move in moves:
-        board.push_san(move)
+    for piece in pieces:
+        splited = piece.split()
+        position = splited[0]
+        piece_char = splited[1]
 
-    find_result = find_game(moves=" ".join(str(x) for x in board.move_stack).strip())
+        board.set_piece_at(square=chess.parse_square(
+            position), piece=chess.Piece.from_symbol(piece_char))
 
-    if find_result:
-        return find_result.split()[next_move - 1]
-    else:
-        return f"{get_stockfish_move(fen=board.fen(), stockfish=stockfish)} stockfish"
+    if not board.is_game_over():
+        return get_engine_move(board=board, engine=engine)

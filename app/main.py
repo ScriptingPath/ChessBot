@@ -4,7 +4,10 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import engine
 import settings
-from stockfish import Stockfish
+import chess.engine
+
+chess_engine = chess.engine.SimpleEngine.popen_uci([x for x in settings.get_value(
+    "engine_command").split()], timeout=settings.get_value("engine_timeout"))
 
 
 class handler(BaseHTTPRequestHandler):
@@ -12,34 +15,54 @@ class handler(BaseHTTPRequestHandler):
         content_length = int(self.headers['Content-Length'])
 
         data = json.loads(self.rfile.read(content_length).decode("utf-8"))
-        moves = data.get("moves")
-        next_move = data.get("next_move")
+        pieces = data.get("pieces")
+        turn = data.get("turn")
+        action = data.get("action")
 
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-        self.wfile.write(bytes(engine.get_best_move(
-            next_move=next_move, moves=moves, stockfish=stockfish), "utf8"))
+        if action == "restart_engine":
+            print("Restarting engine...")
+            restart_engine()
+            print("Engine restarted")
+
+            self.wfile.write(bytes("ok", "utf-8"))
+
+            return
+
+        advisor_boxes_settings = settings.get_value("advisor_boxes")
+
+        self.wfile.write(bytes(
+            json.dumps({
+                "move": engine.get_best_move(pieces=pieces, turn=turn, engine=chess_engine),
+                "from_box_color": advisor_boxes_settings.get("from_box_color"),
+                "to_box_color": advisor_boxes_settings.get("to_box_color"),
+                "border_size": advisor_boxes_settings.get("border_size"),
+                "border_radius": advisor_boxes_settings.get("border_radius")
+            }), "utf8"))
 
 
-def reset_stockfish():
-    global stockfish
-    stockfish = Stockfish(path=settings.get_value("stockfish_path"), depth=settings.get_value(
-        "stockfish_depth"), parameters=settings.get_value("stockfish_params"))
+def restart_engine():
+    global chess_engine
+
+    if chess_engine:
+        chess_engine.quit()
+
+    chess_engine = chess.engine.SimpleEngine.popen_uci([x for x in settings.get_value(
+        "engine_command").split()], timeout=settings.get_value("engine_timeout"))
 
 
 def main():
     if not os.path.exists("settings.json"):
         settings.create_settings()
-    
-    reset_stockfish()
 
-    with HTTPServer(('', 9211), handler) as server:
-        print("Server Started")
+    with HTTPServer(('', settings.get_value("server_port")), handler) as server:
+        print(f"Local server started on 127.0.0.1:{server.server_port}")
         server.serve_forever()
 
 
 while True:
     main()
-    print("Server Restarted")
+    print("Local server dead, restarting...")

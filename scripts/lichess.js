@@ -10,14 +10,18 @@
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // ==/UserScript==
 
-var last_moves_count = 0;
-var check_interval = null;
+const SERVER_PORT = 9211;
+
+var last_board_childs = null;
+var observer = null;
+var interval = null;
 
 var tags = {
     "moves_box": "l4x",
     "move": "kwdb",
     "board": "cg-board",
     "puzzle_move": "move",
+    "piece": "piece"
 }
 
 
@@ -33,57 +37,36 @@ var vertical = {}
 var horizontal = {}
 
 
-function get_moves() {
-    var moves_box = document.querySelector(tags.moves_box);
-    var puzzle_box = document.querySelector(classes.puzzle_moves_box);
+function get_pieces() {
+    var pieces = [];
+    var board = get_board();
 
-    if (moves_box) {
-        var moves = [];
+    Array.from(board.querySelectorAll(tags.piece)).forEach(function (elem) {
+        var text_split = elem.className.split(" ");
+        var color_char = text_split[0][0];
+        var piece_char = text_split[1] == "knight" ? "n" : text_split[1][0];
+        var piece_position = get_piece_position(elem);
 
-        Array.from(moves_box.childNodes).forEach(function (elem) {
-            if (elem.tagName == tags.move.toUpperCase()) {
-                moves.push(elem.textContent);
-            }
-        })
+        pieces.push(`${piece_position} ${color_char == "w" ? piece_char.toUpperCase() : piece_char.toLowerCase()}`);
+    })
 
-        return moves;
-
-    } else if (puzzle_box) {
-        var moves = [];
-
-        Array.from(puzzle_box.childNodes).forEach(function (elem) {
-            if (elem.tagName == tags.puzzle_move.toUpperCase()) {
-                moves.push(elem.textContent.replace("✓", ""));
-            }
-        })
-
-        return moves;
-    }
+    return pieces;
 }
 
 
-function get_moves_count() {
-    var moves_box = document.querySelector(tags.moves_box);
-
-    if (moves_box) {
-        return moves_box.querySelectorAll(tags.move).length;
-    }
-
-    var puzzle_box = document.querySelector(classes.puzzle_moves_box);
-
-    if (puzzle_box) {
-        return puzzle_box.querySelectorAll(tags.puzzle_move).length;
-    }
+function get_board() {
+    return document.querySelector(tags.board);
 }
 
-function get_turn() {
-    if (get_moves_count() % 2 == 0) {
-        return "white";
-    } else if (get_moves_count() % 2 == 1) {
-        return "black";
-    } else {
-        return "white";
-    }
+
+function get_piece_position(elem) {
+    var style = window.getComputedStyle(elem);
+    var matrix = new WebKitCSSMatrix(style.transform);
+
+    var x = matrix.m41;
+    var y = matrix.m42;
+
+    return `${Object.keys(horizontal).find(key => horizontal[key] === x)}${Object.keys(vertical).find(key => vertical[key] === y)}`;
 }
 
 function get_board_square_size() {
@@ -92,7 +75,7 @@ function get_board_square_size() {
 
 
 function get_board_size() {
-    return document.querySelector(tags.board).parentNode.style.width.replace("px", "");
+    return get_board().offsetHeight;
 }
 
 
@@ -159,31 +142,31 @@ function set_cords() {
 }
 
 
-function draw_move(move, color) {
-    var from = move.slice(0, -2)
-    var to = move.slice(2)
+function draw_move(move, from_color, to_color, border_size, border_radius) {
+    var from = move.slice(0, -2);
+    var to = move.slice(2);
 
-    var board = document.querySelector(tags.board);
+    var board = get_board();
 
     var from_square = document.createElement("square");
     from_square.className = "from";
     from_square.setAttribute("style", `transform: translate(${horizontal[from[0]]}px, ${vertical[from[1]]}px);
-    border: 2px solid ${color};
-    border-radius: 10px`)
+    border: ${border_size} solid ${from_color};
+    border-radius: ${border_radius}`);
     board.appendChild(from_square);
 
     var to_square = document.createElement("square");
     to_square.className = "to";
     to_square.setAttribute("style", `transform: translate(${horizontal[to[0]]}px, ${vertical[to[1]]}px);
-    border: 2px solid ${color};
-    border-radius: 10px`)
+    border: ${border_size} solid ${to_color};
+    border-radius: ${border_radius}`);
 
     board.appendChild(to_square);
 }
 
 
 function remove_draw() {
-    var board = document.querySelector(tags.board);
+    var board = get_board();
 
     Array.from(board.querySelectorAll(".from")).forEach(function (elem) {
         elem.remove();
@@ -195,12 +178,14 @@ function remove_draw() {
 }
 
 function get_best_move() {
+    set_cords();
+
     GM_xmlhttpRequest({
         method: "POST",
         url: "http://127.0.0.1:9211/",
         data: JSON.stringify({
-            "moves": get_moves(),
-            "next_move": get_moves_count() + 1
+            "pieces": get_pieces(),
+            "turn": get_board_orientation()
         }),
 
         headers: {
@@ -208,32 +193,32 @@ function get_best_move() {
         },
 
         onload: function (response) {
-            var data = response.responseText
+            var data = JSON.parse(response.responseText)
 
             if (data != "None" && data != null && data != undefined) {
-                set_cords();
                 remove_draw();
 
-                if (response.responseText.split(" ")[1] == "stockfish") {
-                    draw_move(response.responseText.split(" ")[0], "#ff0000")
-                } else {
-                    draw_move(response.responseText.split(" ")[0], "#000000")
-                }
+                draw_move(data["move"], data["from_box_color"], data["to_box_color"], data["border_size"], data["border_radius"]);
 
             } else {
-                console.error(`Engine Error: Response is ${data}`)
+                console.error(`Engine Error: Response is ${data}`);
             }
         }
     });
 }
 
-function check() {
-    var moves_count = get_moves_count();
+function restart_engine() {
+    GM_xmlhttpRequest({
+        method: "POST",
+        url: "http://127.0.0.1:9211/",
+        data: JSON.stringify({
+            "action": "restart_engine"
+        }),
 
-    if (moves_count != last_moves_count && get_turn() == get_board_orientation()) {
-        last_moves_count = moves_count;
-        setTimeout(get_best_move, 150);
-    }
+        headers: {
+            "Content-Type": "application/json; charset=utf-8"
+        },
+    })
 }
 
 (function () {
@@ -242,19 +227,9 @@ function check() {
     document.addEventListener('keydown', function (event) {
         if (event.code == 'KeyX') {
             get_best_move();
+        } else if (event.code == 'KeyR') {
+            restart_engine();
         }
     });
 
-    document.addEventListener('keydown', function (event) {
-        if (event.code == 'KeyC') {
-            if (!check_interval) {
-                check_interval = setInterval(check, 50);
-            } else {
-                clearInterval(check_interval);
-                check_interval = null;
-                last_moves_count = 0;
-            }
-        }
-    })
-    
 })();
