@@ -1,68 +1,89 @@
 import json
 import os
+
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import engine
 import settings
-import chess.engine
-
-chess_engine = chess.engine.SimpleEngine.popen_uci([x for x in settings.get_value(
-    "engine_command").split()], timeout=settings.get_value("engine_timeout"))
+from multiprocessing import Process
+import sys
+import console
+import ui_core
+import traceback
 
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
+        console.log("Received request")
 
-        data = json.loads(self.rfile.read(content_length).decode("utf-8"))
-        pieces = data.get("pieces")
-        turn = data.get("turn")
-        action = data.get("action")
+        try:
+            content_length = int(self.headers['Content-Length'])
 
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
+            data = json.loads(self.rfile.read(content_length).decode("utf-8"))
+            pieces = data.get("pieces")
+            turn = data.get("turn")
+            action = data.get("action")
 
-        if action == "restart_engine":
-            print("Restarting engine...")
-            restart_engine()
-            print("Engine restarted")
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
 
-            self.wfile.write(bytes("ok", "utf-8"))
+            if action == "restart_engine":
+                console.log("Restarting engine...")
+                engine.restart_engine()
+                console.log("Engine restarted")
 
-            return
+                self.wfile.write(bytes("ok", "utf-8"))
 
-        advisor_boxes_settings = settings.get_value("advisor_boxes")
+                return
 
-        self.wfile.write(bytes(
-            json.dumps({
-                "move": engine.get_best_move(pieces=pieces, turn=turn, engine=chess_engine),
-                "from_box_color": advisor_boxes_settings.get("from_box_color"),
-                "to_box_color": advisor_boxes_settings.get("to_box_color"),
-                "border_size": advisor_boxes_settings.get("border_size"),
-                "border_radius": advisor_boxes_settings.get("border_radius")
-            }), "utf8"))
+            advisor_boxes_settings = settings.get_value("advisor_boxes")
 
-
-def restart_engine():
-    global chess_engine
-
-    if chess_engine:
-        chess_engine.quit()
-
-    chess_engine = chess.engine.SimpleEngine.popen_uci([x for x in settings.get_value(
-        "engine_command").split()], timeout=settings.get_value("engine_timeout"))
+            self.wfile.write(bytes(
+                json.dumps({
+                    "move": engine.get_best_move(pieces=pieces, turn=turn),
+                    "from_box_color": advisor_boxes_settings.get("from_box_color"),
+                    "to_box_color": advisor_boxes_settings.get("to_box_color"),
+                    "border_size": advisor_boxes_settings.get("border_size"),
+                    "border_radius": advisor_boxes_settings.get("border_radius")
+                }), "utf8"))
+        except Exception:
+            console.log(traceback.format_exc())
 
 
 def main():
+    console.clear_log()
+
+    process = Process(target=thread)
+    process.start()
+    ui_core.start()
+    try:
+        engine.chess_engine.quit()
+    except:
+        pass
+    process.terminate()
+    process.kill()
+    process.close()
+
+    console.clear_log()
+    
+    sys.exit()
+
+
+def start_server():
     if not os.path.exists("settings.json"):
         settings.create_settings()
 
     with HTTPServer(('', settings.get_value("server_port")), handler) as server:
-        print(f"Local server started on 127.0.0.1:{server.server_port}")
+        console.log(f"Local server started on 127.0.0.1:{server.server_port}")
         server.serve_forever()
 
 
-while True:
+def thread():
+    while True:
+        start_server()
+        console.log("Local server dead, restarting...")
+
+
+if __name__ == '__main__':
     main()
-    print("Local server dead, restarting...")

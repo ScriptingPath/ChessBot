@@ -14,7 +14,7 @@ const SERVER_PORT = 9211;
 
 var last_board_childs = null;
 var observer = null;
-var interval = null;
+var timeout = null;
 
 var tags = {
     "moves_box": "l4x",
@@ -193,12 +193,17 @@ function get_best_move() {
         },
 
         onload: function (response) {
-            var data = JSON.parse(response.responseText)
+            try {
+                var data = JSON.parse(response.responseText)
+            } catch (e) {
+                setTimeout(get_best_move, 150);
+                return;
+            }
 
             if (data != "None" && data != null && data != undefined) {
                 remove_draw();
 
-                draw_move(data["move"], data["from_box_color"], data["to_box_color"], data["border_size"], data["border_radius"]);
+                draw_move(data.move, data.from_box_color, data.to_box_color, data.border_size, data.border_radius);
 
             } else {
                 console.error(`Engine Error: Response is ${data}`);
@@ -221,6 +226,28 @@ function restart_engine() {
     })
 }
 
+function start_observer() {
+    observer = new MutationObserver(function (mutations) {
+        Array.from(mutations).forEach(function (mutation) {
+            if (mutation.target.tagName == "PIECE" && !mutation.target.className.includes(get_board_orientation())) {
+                if (!timeout) {
+                    timeout = setTimeout(get_best_move, 100);
+                } else {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(get_best_move, 100);
+                }
+            }
+        })
+    })
+
+    observer.observe(get_board(), {
+        childList: true,
+        attributes: true,
+        attributeOldValue: true,
+        subtree: true
+    });
+}
+
 (function () {
     'use strict';
 
@@ -229,6 +256,13 @@ function restart_engine() {
             get_best_move();
         } else if (event.code == 'KeyR') {
             restart_engine();
+        } else if (event.code == 'KeyC') {
+            if (!observer) {
+                start_observer();
+                get_best_move()
+            } else {
+                observer.disconnect();
+            }
         }
     });
 

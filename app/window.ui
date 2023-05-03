@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>612</width>
+    <height>449</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Arial</family>
+    <pointsize>12</pointsize>
+    <weight>75</weight>
+    <bold>true</bold>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* Basic */
+
+QWidget {
+    background-color: rgb(23, 23, 23);
+    color: #fff;
+    border-radius: 9px;
+}
+
+QMainWindow &gt; QWidget {
+    background-color: rgb(20, 20, 20) !important;
+    color: #fff !important;
+}
+
+QPushButton,
+QToolButton,
+QCheckBox {
+    background-color: rgb(27, 27, 27);
+    border-radius: 5px;
+    outline: none;
+}
+
+QComboBox,
+QSpinBox,
+QDoubleSpinBox,
+QTimeEdit,
+QDateEdit,
+QDateTimeEdit,
+QLineEdit,
+QTextEdit,
+QPlainTextEdit,
+QKeySequenceEdit {
+    background-color: rgb(28, 28, 28);
+    border-radius: 5px;
+    outline: none;
+}
+
+
+QPushButton:hover,
+QToolButton:hover,
+QRadioButton:hover,
+QCheckBox:hover,
+QComboBox:hover,
+QLineEdit:hover,
+
+QPlainTextEdit:hover,
+QSpinBox:hover,
+QDoubleSpinBox:hover,
+QTimeEdit:hover,
+QDateEdit:hover,
+QDateTimeEdit:hover,
+QKeySequenceEdit:hover {
+    background-color: rgb(32, 32, 32);
+}
+
+QTextEdit:hover {
+    background-color: rgb(25, 25, 25);
+}
+
+QPushButton:pressed,
+QToolButton:pressed,
+QRadioButton:pressed,
+QCheckBox:pressed,
+QComboBox:pressed,
+QLineEdit:pressed,
+QTextEdit:pressed,
+QPlainTextEdit:pressed,
+QSpinBox:pressed,
+QDoubleSpinBox:pressed,
+QTimeEdit:pressed,
+QDateEdit:pressed,
+QDateTimeEdit:pressed,
+QKeySequenceEdit:pressed {
+    background-color: rgb(36, 36, 36);
+}
+
+QLineEdit:focus,
+QPlainTextEdit:focus,
+QSpinBox:focus,
+QDoubleSpinBox:focus,
+QTimeEdit:focus,
+QDateEdit:focus,
+QDateTimeEdit:focus,
+QKeySequenceEdit:focus {
+    background-color: rgb(30.5, 30.5, 30.5)
+}
+
+QTextEdit:focus {
+    background-color: rgb(28.5, 28.5, 28.5)
+}
+
+QComboBox {
+    padding: 1px 0px 1px 3px;
+}
+
+
+QComboBox::drop-down
+{
+    border: 0px; /* This seems to replace the whole arrow of the combo box */
+}
+
+QComboBox::down-arrow {
+    width: 199px;
+    height: 14px;
+}
+
+QRadioButton {
+    background-color: rgb(28, 28, 28);
+    border-radius: 5px;
+}
+
+/* For Frames */
+
+QFrame {
+    background-color: rgb(23, 23, 23);
+    border-radius: 9px;
+}
+
+QFrame &gt; QPushButton,
+QFrame &gt; QPushButton,
+QFrame &gt; QToolButton,
+QFrame &gt; QCheckBox {
+    background-color: rgb(30, 30, 30);
+}
+
+QFrame &gt; QComboBox,
+QFrame &gt; QSpinBox,
+QFrame &gt; QDoubleSpinBox,
+QFrame &gt; QTimeEdit,
+QFrame &gt; QDateEdit,
+QFrame &gt; QDateTimeEdit,
+QFrame &gt; QLineEdit,
+QFrame &gt; QTextEdit,
+QFrame &gt; QPlainTextEdit,
+QFrame &gt; QKeySequenceEdit {
+    background-color: rgb(31, 31, 31);
+    border-radius: 5px;
+    outline: none;
+}
+
+
+QFrame &gt; QPushButton:hover,
+QFrame &gt; QToolButton:hover,
+QFrame &gt; QRadioButton:hover,
+QFrame &gt; QCheckBox:hover,
+QFrame &gt; QComboBox:hover,
+QFrame &gt; QLineEdit:hover,
+QFrame &gt; QTextEdit:hover,
+QFrame &gt; QPlainTextEdit:hover,
+QFrame &gt; QSpinBox:hover,
+QFrame &gt; QDoubleSpinBox:hover,
+QFrame &gt; QTimeEdit:hover,
+QFrame &gt; QDateEdit:hover,
+QFrame &gt; QDateTimeEdit:hover,
+QFrame &gt; QKeySequenceEdit:hover {
+    background-color: rgb(35, 35, 35);
+}
+
+QFrame &gt; QPushButton:pressed,
+QFrame &gt; QToolButton:pressed,
+QFrame &gt; QRadioButton:pressed,
+QFrame &gt; QCheckBox:pressed,
+QFrame &gt; QComboBox:pressed,
+QFrame &gt; QLineEdit:pressed,
+QFrame &gt; QTextEdit:pressed,
+QFrame &gt; QPlainTextEdit:pressed,
+QFrame &gt; QSpinBox:pressed,
+QFrame &gt; QDoubleSpinBox:pressed,
+QFrame &gt; QTimeEdit:pressed,
+QFrame &gt; QDateEdit:pressed,
+QFrame &gt; QDateTimeEdit:pressed,
+QFrame &gt; QKeySequenceEdit:pressed {
+    background-color: rgb(39, 39, 39);
+}
+
+/* Vertical Scroll Bar */
+
+QScrollBar:vertical {
+    background-color: rgba(25, 25, 25, 0);
+    border: 8px solid rgba(25, 25, 25, 0);
+    width: 7px;
+    max-width: 10px;
+    min-width: 5px;
+    margin: 15px 0 15px 0;
+    border-radius: 7px !important;
+    transition: 3s;
+}
+
+QScrollBar:vertical:hover {
+    background-color: rgba(25, 25, 25, 0.830);
+}
+
+QScrollBar::handle:vertical {
+    background-color: rgb(30, 30, 30);
+    min-height: 30px;
+    border-radius: 7px !important;
+}
+QScrollBar::handle:vertical:hover{
+	background-color: rgb(32, 32, 32);
+}
+
+QScrollBar::handle:vertical:pressed {
+	background-color: rgb(35, 35, 35);
+}
+
+/* Top Button */
+
+QScrollBar::sub-line:vertical {
+	border: none;
+	background-color: transparent;
+	height: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+    width: 0px;
+}
+
+/* Bottom Button */
+
+QScrollBar::add-line:vertical {
+	border: none;
+	background-color: transparent;
+	height: 0px;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+    width: 0px;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+	background: none;
+}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+	background: none;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <widget class="QFrame" name="console_frame">
+    <property name="geometry">
+     <rect>
+      <x>361</x>
+      <y>60</y>
+      <width>241</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="console_text">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>8</y>
+       <width>241</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Console</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="console">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>6</x>
+       <y>34</y>
+       <width>230</width>
+       <height>331</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="depth_frame">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>341</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QSlider" name="depth_slider">
+     <property name="geometry">
+      <rect>
+       <x>142</x>
+       <y>6</y>
+       <width>160</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>20</number>
+     </property>
+     <property name="value">
+      <number>1</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="depth_label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>5</y>
+       <width>121</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Depth</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="depth_value">
+     <property name="geometry">
+      <rect>
+       <x>311</x>
+       <y>8</y>
+       <width>22</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>?</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="window_header">
+    <property name="geometry">
+     <rect>
+      <x>-1</x>
+      <y>0</y>
+      <width>621</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="chess_bot_title">
+     <property name="geometry">
+      <rect>
+       <x>19</x>
+       <y>11</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>ChessBot</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="timeout_frame">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>167</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="timeout_text">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>5</y>
+       <width>101</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Timeout</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="timeout_value">
+     <property name="geometry">
+      <rect>
+       <x>117</x>
+       <y>5</y>
+       <width>41</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="text">
+      <string>?</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="max_think_time_frame">
+    <property name="geometry">
+     <rect>
+      <x>185</x>
+      <y>140</y>
+      <width>167</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="think_time_text">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>5</y>
+       <width>101</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Think Time</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="max_think_time_value">
+     <property name="geometry">
+      <rect>
+       <x>117</x>
+       <y>5</y>
+       <width>41</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="text">
+      <string>?</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="hotkeys_frame">
+    <property name="geometry">
+     <rect>
+      <x>12</x>
+      <y>180</y>
+      <width>165</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="x_button">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>151</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>X – Draw Best Move</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="r_button">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>36</y>
+       <width>141</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>R – Reload Engine</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="c_button">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>131</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>C – Auto Draw Move</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="about_frame">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>180</y>
+      <width>165</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="github_button">
+     <property name="geometry">
+      <rect>
+       <x>7</x>
+       <y>10</y>
+       <width>151</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Github</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="releases_button">
+     <property name="geometry">
+      <rect>
+       <x>7</x>
+       <y>42</y>
+       <width>151</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Releases</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="version_text">
+     <property name="geometry">
+      <rect>
+       <x>7</x>
+       <y>69</y>
+       <width>151</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>v1.0.1</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="engine_frame">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>341</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QLabel" name="engine_text">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>5</y>
+       <width>121</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>UCI-Engine</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="engine_command">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>6</y>
+       <width>163</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="text">
+      <string>?</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="engine_browse_button">
+     <property name="geometry">
+      <rect>
+       <x>312</x>
+       <y>6</y>
+       <width>21</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial</family>
+      </font>
+     </property>
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
