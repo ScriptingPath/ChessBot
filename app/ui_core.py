@@ -6,8 +6,8 @@ import engine
 import settings
 import ui
 from console import log
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QObject, QThread, pyqtSignal
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class UpdateConsole(QThread):

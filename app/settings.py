@@ -1,7 +1,7 @@
 import json
 
 default_settings = {
-    "engine_command": None,  # path to engine with args
+    "engine_command": "",  # path to engine with args
     "engine_timeout": 15,  # timeout for starting and thinking
     "engine_max_thinking_time": 2,
     "engine_depth": 10,  # strength (change it for speed)

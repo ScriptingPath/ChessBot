@@ -1,11 +1,15 @@
-import json
 import os
+import settings
+if not os.path.exists("settings.json"):
+    settings.create_settings()
+
+import json
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import engine
-import settings
-from multiprocessing import Process
+
+from threading import Thread
 import sys
 import console
 import ui_core
@@ -54,26 +58,22 @@ class handler(BaseHTTPRequestHandler):
 def main():
     console.clear_log()
 
-    process = Process(target=thread)
-    process.start()
+    server_thread = Thread(target=thread, daemon=True)
+    server_thread.start()
+
     ui_core.start()
+
     try:
         engine.chess_engine.quit()
     except:
         pass
-    process.terminate()
-    process.kill()
-    process.close()
 
     console.clear_log()
-    
+
     sys.exit()
 
 
 def start_server():
-    if not os.path.exists("settings.json"):
-        settings.create_settings()
-
     with HTTPServer(('', settings.get_value("server_port")), handler) as server:
         console.log(f"Local server started on 127.0.0.1:{server.server_port}")
         server.serve_forever()
